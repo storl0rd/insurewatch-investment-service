@@ -77,7 +77,8 @@ function applyChaos() {
 
 // Seed data
 async function seedData() {
-  const count = await Investment.estimatedDocumentCount();
+  const existing = await Investment.findOne({}).lean();
+  const count = existing ? 1 : 0;
   if (count === 0) {
     const customers = ['CUST001','CUST002','CUST003','CUST004','CUST005'];
     for (const cid of customers) {

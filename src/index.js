@@ -17,7 +17,9 @@ const logger = winston.createLogger({
 });
 
 // MongoDB connection
-mongoose.connect(process.env.MONGODB_URL || 'mongodb://localhost:27017/insurewatch');
+mongoose.connect(process.env.MONGODB_URL || 'mongodb://localhost:27017/insurewatch')
+  .catch(err => logger.error('MongoDB initial connection error', { error: err.message }));
+mongoose.connection.on('error', err => logger.error('MongoDB connection error', { error: err.message }));
 
 const InvestmentSchema = new mongoose.Schema({
   customerId: String,

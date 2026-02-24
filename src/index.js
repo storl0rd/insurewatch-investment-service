@@ -77,26 +77,27 @@ function applyChaos() {
 
 // Seed data
 async function seedData() {
-  const existing = await Investment.findOne({}).lean();
-  const count = existing ? 1 : 0;
-  if (count === 0) {
-    const customers = ['CUST001','CUST002','CUST003','CUST004','CUST005'];
-    for (const cid of customers) {
-      await Investment.create({
-        customerId: cid,
-        portfolioId: `PORT-${cid}`,
-        portfolioName: `${cid} Growth Portfolio`,
-        totalValue: 50000 + Math.random() * 200000,
-        holdings: [
-          { symbol: 'AAPL', name: 'Apple Inc.', shares: 50,  currentPrice: 182.5, value: 9125,  changePercent:  1.2 },
-          { symbol: 'MSFT', name: 'Microsoft',  shares: 30,  currentPrice: 415.2, value: 12456, changePercent:  0.8 },
-          { symbol: 'GOOGL',name: 'Alphabet',   shares: 20,  currentPrice: 171.5, value: 3430,  changePercent: -0.3 },
-          { symbol: 'BRK.B',name: 'Berkshire',  shares: 100, currentPrice: 380.0, value: 38000, changePercent:  0.5 },
-        ],
-      });
-    }
-    logger.info('Seeded investment data');
+  const customers = ['CUST001','CUST002','CUST003','CUST004','CUST005'];
+  for (const cid of customers) {
+    await Investment.updateOne(
+      { customerId: cid },
+      { $setOnInsert: {
+          customerId: cid,
+          portfolioId: `PORT-${cid}`,
+          portfolioName: `${cid} Growth Portfolio`,
+          totalValue: 50000 + Math.random() * 200000,
+          holdings: [
+            { symbol: 'AAPL', name: 'Apple Inc.', shares: 50,  currentPrice: 182.5, value: 9125,  changePercent:  1.2 },
+            { symbol: 'MSFT', name: 'Microsoft',  shares: 30,  currentPrice: 415.2, value: 12456, changePercent:  0.8 },
+            { symbol: 'GOOGL',name: 'Alphabet',   shares: 20,  currentPrice: 171.5, value: 3430,  changePercent: -0.3 },
+            { symbol: 'BRK.B',name: 'Berkshire',  shares: 100, currentPrice: 380.0, value: 38000, changePercent:  0.5 },
+          ],
+        }
+      },
+      { upsert: true }
+    );
   }
+  logger.info('Seeded investment data');
 }
 
 // Routes

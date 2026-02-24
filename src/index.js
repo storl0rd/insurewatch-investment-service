@@ -147,6 +147,10 @@ app.post('/chaos/set', (req, res) => {
 
 const PORT = process.env.PORT || 3002;
 app.listen(PORT, async () => {
-  await seedData();
+  try {
+    await seedData();
+  } catch (err) {
+    logger.warn('Seed data failed, service will start without seeded data', { error: err.message });
+  }
   logger.info(`Investment Service started on port ${PORT}`);
 });
